@@ -8,4 +8,8 @@
  * Author URI: http://www.microTrx.com
  * License: GPL2
  */
+
+// Pull in the options page for admin settings
+include 'options.php';
+
 ?>
