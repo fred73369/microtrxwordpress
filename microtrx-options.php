@@ -22,7 +22,7 @@ function plugin_options_page() {
 <?php
 }
 
-// Add the admin settings and such
+// Add the admin settings
 add_action('admin_init', 'plugin_admin_init');
 
 function plugin_admin_init(){
@@ -38,6 +38,8 @@ function plugin_admin_init(){
   add_settings_field('plugin_default_mode_radio', 'Use Paywall for all Posts?', 'default_mode_setting_radio', 'plugin', 'plugin_mode_section');
 }
 
+
+// Public Key section
 function bitcoin_wallet_section_text() {
   echo '<p>Enter your HD wallet Public Key.  This should be a standard BIP 38 compliant public key.  Trezor, GreenAddress, and Mycelium are
   examples of wallets that support using these keys.</p>';
@@ -48,6 +50,8 @@ function public_key_setting_string() {
   echo "<input id='plugin_public_key_string' name='microtrx_options[public_key_string]' size='40' type='text' value='{$options['public_key_string']}' />";
 }
 
+
+// Default amount section
 function amount_section_text() {
   echo '<p>Enter the default amount to charge per Post.  This value can be overriden in each specific Post configuration settings.</p>';
 }
@@ -61,6 +65,8 @@ function default_charge_setting_string() {
   echo "<input id='plugin_default_charge_string' name='microtrx_options[default_charge_string]' size='40' type='text' value='{$val}' />";
 }
 
+
+// Default mode section
 function mode_section_text() {
   echo '<p>Enter the mode of operation.  If you would like to turn on the paywall for all Posts site-wide, choose \'Yes\'.  If you would like to have some posts
   with the paywall disabled, then choose \'No\'.  If set to \'No\', the paywall can be enabled/disabled for each Post. </p>';
@@ -81,7 +87,11 @@ function default_mode_setting_radio() {
   echo "<input name='microtrx_options[default_mode_string]' type='radio' value='No' {$no}/>No";
 }
 
+
+// Property Validations - called when user clicks Save
 function plugin_options_validate($input) {
   return $input;
 }
+
+// Error messages can be set from this API - http://codex.wordpress.org/Function_Reference/add_settings_error
 ?>
