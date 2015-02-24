@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: microTrx Bitcoin Paywall
+ * Plugin Name: MicroTrx Bitcoin Paywall
  * Plugin URI: http://www.microTrx.com
  * Description: A paywall to allow users to charge Bitcoin to see posts.
  * Version: 0.1.1
@@ -10,6 +10,5 @@
  */
 
 // Pull in the options page for admin settings
-include 'options.php';
-
+include 'microtrx-options.php';
 ?>

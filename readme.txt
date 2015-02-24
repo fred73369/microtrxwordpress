@@ -1,4 +1,4 @@
-=== microTrx Bitcoin Paywall ===
+=== MicroTrx Bitcoin Paywall ===
 Tags: Bitcoin Paywall
 Stable tag: trunk
 License: GPL
