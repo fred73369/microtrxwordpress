@@ -1,5 +1,7 @@
 <?php // add the admin options page - based on http://ottopress.com/2009/wordpress-settings-api-tutorial/
 
+$microtrx_url = 'http://localhost:3000/api/v1/simple/';
+
 add_action('admin_menu', 'plugin_admin_add_page');
 
 function plugin_admin_add_page() {
@@ -32,7 +34,7 @@ function plugin_admin_init(){
   add_settings_field('plugin_public_key_string', 'HD Wallet Public Key', 'public_key_setting_string', 'plugin', 'plugin_main');
 
   add_settings_section('plugin_amount_section', 'Default Charge Settings', 'amount_section_text', 'plugin');
-  add_settings_field('plugin_default_charge_string', 'Default Charge', 'default_charge_setting_string', 'plugin', 'plugin_amount_section');
+  add_settings_field('plugin_default_charge_string', 'Default Charge (BTC)', 'default_charge_setting_string', 'plugin', 'plugin_amount_section');
 
   add_settings_section('plugin_mode_section', 'Mode Settings', 'mode_section_text', 'plugin');
   add_settings_field('plugin_default_mode_radio', 'Use Paywall for all Posts?', 'default_mode_setting_radio', 'plugin', 'plugin_mode_section');
@@ -53,7 +55,7 @@ function public_key_setting_string() {
 
 // Default amount section
 function amount_section_text() {
-  echo '<p>Enter the default amount to charge per Post.  This value can be overriden in each specific Post configuration settings.</p>';
+  echo '<p>Enter the default amount to charge per Post.  This value can be overriden in each specific Post configuration settings.  Valid values range between 0.00001 and 10000.</p>';
 }
 
 function default_charge_setting_string() {
@@ -89,9 +91,73 @@ function default_mode_setting_radio() {
 
 
 // Property Validations - called when user clicks Save
-function plugin_options_validate($input) {
-  return $input;
-}
-
 // Error messages can be set from this API - http://codex.wordpress.org/Function_Reference/add_settings_error
+function plugin_options_validate($input) {
+  $options = get_option('microtrx_options');
+
+  // Get and validate the HD Public Key
+  $key = trim($input['public_key_string']);
+
+  // Use the microtrx api to register the key
+  $response = wp_remote_post( 'http://localhost:3000/api/v1/simple/keys' , array( 'body' => array( 'publicKey' => $key )));
+
+  // Check for http error
+  if ( is_wp_error( $response ) ) {
+    $error_message = "Failed to contact MicroTrx Server: " . $response->get_error_message();
+    add_settings_error(
+        'microtrx',
+        esc_attr( 'settings_error' ),
+        $error_message
+    );
+
+  } else {
+
+    // Get the response body
+    $body = wp_remote_retrieve_body($response);
+
+    // Convert the JSON string into an associative array
+    $json = json_decode($body, true);
+
+    // Check for API success
+    if(! $json['success']){
+      $error_message = "Failed register Public Key with MicroTrx Server: " . $json['error'];
+      add_settings_error(
+          'microtrx',
+          esc_attr( 'settings_error' ),
+          $error_message
+      );
+    } else {
+      // Success - save it off
+      $options['public_key_string'] = $key;
+    }
+
+  }
+
+
+  // Get and validate the default BTC amount
+  $amount = floatval(trim($input['default_charge_string']));
+  if($amount >= 0.00001 && $amount <= 10000){
+    $options['default_charge_string'] = strval($amount);
+  } else {
+    add_settings_error(
+        'microtrx',
+        esc_attr( 'settings_error' ),
+        'Invalide default charge amount.  Value must be a valid number between 0.00001 and 10000.'
+    );
+  }
+
+  // Get and validate the Yes/No option
+  $mode = trim($input['default_mode_string']);
+  if($mode === 'Yes' || $mode === 'No'){
+    $options['default_mode_string'] = $mode;
+  } else {
+    add_settings_error(
+        'microtrx',
+        esc_attr( 'settings_error' ),
+        'Invalide mode of operation selected.  Value must be Yes/No.'
+    );
+  }
+
+  return $options;
+}
 ?>
