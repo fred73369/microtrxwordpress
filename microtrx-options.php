@@ -1,7 +1,5 @@
 <?php // add the admin options page - based on http://ottopress.com/2009/wordpress-settings-api-tutorial/
 
-$microtrx_url = 'http://localhost:3000/api/v1/simple/';
-
 add_action('admin_menu', 'plugin_admin_add_page');
 
 function plugin_admin_add_page() {
@@ -99,7 +97,7 @@ function plugin_options_validate($input) {
   $key = trim($input['public_key_string']);
 
   // Use the microtrx api to register the key
-  $response = wp_remote_post( 'http://localhost:3000/api/v1/simple/keys' , array( 'body' => array( 'publicKey' => $key )));
+  $response = wp_remote_post( 'http://testnet.microtrx.com/api/v1/simple/keys' , array( 'body' => array( 'publicKey' => $key )));
 
   // Check for http error
   if ( is_wp_error( $response ) ) {
@@ -119,7 +117,7 @@ function plugin_options_validate($input) {
     $json = json_decode($body, true);
 
     // Check for API success
-    if(! $json['success']){
+    if($json['success'] === 'false'){
       $error_message = "Failed register Public Key with MicroTrx Server: " . $json['error'];
       add_settings_error(
           'microtrx',
