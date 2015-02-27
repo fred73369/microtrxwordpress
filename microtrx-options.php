@@ -47,7 +47,8 @@ function bitcoin_wallet_section_text() {
 
 function public_key_setting_string() {
   $options = get_option('microtrx_options');
-  echo "<input id='plugin_public_key_string' name='microtrx_options[public_key_string]' size='115' type='text' value='{$options['public_key_string']}' />";
+  echo "<input id='plugin_public_key_string' name='microtrx_options[public_key_string]' size='118' type='text'
+              placeholder='e.g. xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8' value='{$options['public_key_string']}' />";
 }
 
 
