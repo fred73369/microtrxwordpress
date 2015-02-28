@@ -11,4 +11,7 @@
 
 // Pull in the options page for admin settings
 include 'microtrx-options.php';
+
+// Pull in the post meta page for editing posts
+include 'microtrx-post-meta.php';
 ?>
