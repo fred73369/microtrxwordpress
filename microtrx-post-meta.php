@@ -5,24 +5,25 @@
 /**
  * Adds a box to the main column on the Post and Page edit screens.
  */
-function myplugin_add_meta_box() {
+function microtrx_add_meta_box() {
 
     add_meta_box(
-      'myplugin_sectionid',
-      __( 'My Post Section Title', 'myplugin_textdomain' ),
-      'myplugin_meta_box_callback',
+      'microtrx_sectionid',
+      __( 'Microtrx Paywall Options', 'microtrx_textdomain' ),
+      'microtrx_meta_box_callback',
       'post'
     );
 
 }
-add_action( 'add_meta_boxes', 'myplugin_add_meta_box' );
+
+add_action( 'add_meta_boxes', 'microtrx_add_meta_box' );
 
 /**
  * Prints the box content.
  *
  * @param WP_Post $post The object for the current post/page.
  */
-function myplugin_meta_box_callback( $post ) {
+function microtrx_meta_box_callback( $post ) {
 
   // Add an nonce field so we can check for it later.
   wp_nonce_field( 'myplugin_meta_box', 'myplugin_meta_box_nonce' );
@@ -44,7 +45,7 @@ function myplugin_meta_box_callback( $post ) {
  *
  * @param int $post_id The ID of the post being saved.
  */
-function myplugin_save_meta_box_data( $post_id ) {
+function microtrx_save_meta_box_data( $post_id ) {
 
   /*
    * We need to verify this came from our screen and with proper authorization,
@@ -93,6 +94,7 @@ function myplugin_save_meta_box_data( $post_id ) {
   // Update the meta field in the database.
   update_post_meta( $post_id, '_my_meta_value_key', $my_data );
 }
-add_action( 'save_post', 'myplugin_save_meta_box_data' );
+
+add_action( 'save_post', 'microtrx_save_meta_box_data' );
 
 ?>
