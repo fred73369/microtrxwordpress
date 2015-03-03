@@ -26,7 +26,7 @@ add_action( 'add_meta_boxes', 'microtrx_add_meta_box' );
 function microtrx_meta_box_callback( $post ) {
 
   // Add an nonce field so we can check for it later.
-  wp_nonce_field( 'myplugin_meta_box', 'myplugin_meta_box_nonce' );
+  wp_nonce_field( 'microtrx_meta_box', 'microtrx_meta_box_nonce' );
 
   /*
    * Use get_post_meta() to retrieve an existing value
@@ -34,10 +34,20 @@ function microtrx_meta_box_callback( $post ) {
    */
   $value = get_post_meta( $post->ID, '_my_meta_value_key', true );
 
-  echo '<label for="myplugin_new_field">';
-  _e( 'Description for this field', 'myplugin_textdomain' );
+  echo '<label for="microtrx_enabled_field">';
+  _e( 'Enable Bitcoin Paywall', 'microtrx_textdomain' );
   echo '</label> ';
-  echo '<input type="text" id="myplugin_new_field" name="myplugin_new_field" value="' . esc_attr( $value ) . '" size="25" />';
+  ?>
+  <br />
+  <input type="radio" name="microtrx_enable_radio" value="Yes" <?php checked( $value, 'Yes' ); ?> >Yes<br />
+  <input type="radio" name="microtrx_enable_radio" value="No" <?php checked( $value, 'No' ); ?> >No<br />
+  <br />
+  <?
+  echo '<label for="mictrx_paywall_value">';
+  _e( 'Amount to charge (BTC)', 'microtrx_textdomain' );
+  echo '</label> ';
+  echo "<input id='microtrx_charge_string' name='microtrx_charge_string' size='10' type='text' value='" . esc_attr( $value ) . "' />";
+
 }
 
 /**
@@ -53,12 +63,12 @@ function microtrx_save_meta_box_data( $post_id ) {
    */
 
   // Check if our nonce is set.
-  if ( ! isset( $_POST['myplugin_meta_box_nonce'] ) ) {
+  if ( ! isset( $_POST['microtrx_meta_box_nonce'] ) ) {
     return;
   }
 
   // Verify that the nonce is valid.
-  if ( ! wp_verify_nonce( $_POST['myplugin_meta_box_nonce'], 'myplugin_meta_box' ) ) {
+  if ( ! wp_verify_nonce( $_POST['microtrx_meta_box_nonce'], 'microtrx_meta_box' ) ) {
     return;
   }
 
@@ -68,17 +78,8 @@ function microtrx_save_meta_box_data( $post_id ) {
   }
 
   // Check the user's permissions.
-  if ( isset( $_POST['post_type'] ) && 'page' == $_POST['post_type'] ) {
-
-    if ( ! current_user_can( 'edit_page', $post_id ) ) {
-      return;
-    }
-
-  } else {
-
-    if ( ! current_user_can( 'edit_post', $post_id ) ) {
-      return;
-    }
+  if ( ! current_user_can( 'edit_post', $post_id ) ) {
+    return;
   }
 
   /* OK, it's safe for us to save the data now. */
