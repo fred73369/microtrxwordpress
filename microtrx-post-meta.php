@@ -28,6 +28,15 @@ function microtrx_meta_box_callback( $post ) {
   // Add an nonce field so we can check for it later.
   wp_nonce_field( 'microtrx_meta_box', 'microtrx_meta_box_nonce' );
 
+  // Get the plugin options
+  $options = get_option('microtrx_options');
+
+  $disabled = '';
+
+  if($options[default_mode_string] === 'Yes'){
+    $disabled = 'disabled';
+  }
+
   /*
    * Use get_post_meta() to retrieve an existing value
    * from the database and use the value for the form.
@@ -39,8 +48,8 @@ function microtrx_meta_box_callback( $post ) {
   echo '</label> ';
   ?>
   <br />
-  <input type="radio" name="microtrx_enable_radio" value="Yes" <?php checked( $value, 'Yes' ); ?> >Yes<br />
-  <input type="radio" name="microtrx_enable_radio" value="No" <?php checked( $value, 'No' ); ?> >No<br />
+  <input type="radio" name="microtrx_enable_radio" value="Yes" <?php checked( $value, 'Yes' ); echo "disabled={$disabled}" ?> >Yes<br />
+  <input type="radio" name="microtrx_enable_radio" value="No" <?php checked( $value, 'No' ); echo "disabled={$disabled}" ?> >No<br />
   <br />
   <?
   echo '<label for="mictrx_paywall_value">';
