@@ -33,29 +33,46 @@ function microtrx_meta_box_callback( $post ) {
 
   $disabled = '';
 
+  // If the default mode is all paywall (Yes), then disable the radio buttons and set it to enabled
   if($options[default_mode_string] === 'Yes'){
     $disabled = 'disabled';
+    $paywall_enabled = 'Yes';
   }
 
-  /*
-   * Use get_post_meta() to retrieve an existing value
-   * from the database and use the value for the form.
-   */
-  $value = get_post_meta( $post->ID, '_my_meta_value_key', true );
+  // If the default mode is not enabled, figure out if the paywall is enabled for this post
+  if($paywall_enabled !== 'Yes'){
+
+    // Check to see if it is already set for the post
+    $paywall_enabled = get_post_meta( $post->ID, 'microtrx_paywall_enabled', true );
+
+    // If it hasn't been set for the post, then default to No
+    if( empty( $paywall_enabled ) ) {
+      $paywall_enabled = 'No';
+    }
+  }
 
   echo '<label for="microtrx_enabled_field">';
   _e( 'Enable Bitcoin Paywall', 'microtrx_textdomain' );
   echo '</label> ';
   ?>
   <br />
-  <input type="radio" name="microtrx_enable_radio" value="Yes" <?php checked( $value, 'Yes' ); echo "disabled={$disabled}" ?> >Yes<br />
-  <input type="radio" name="microtrx_enable_radio" value="No" <?php checked( $value, 'No' ); echo "disabled={$disabled}" ?> >No<br />
+  <input type="radio" name="microtrx_enable_radio" value="Yes" <?php checked( $paywall_enabled, 'Yes' ); echo "{$disabled}" ?> >Yes<br />
+  <input type="radio" name="microtrx_enable_radio" value="No" <?php checked( $paywall_enabled, 'No' ); echo "{$disabled}" ?> >No<br />
   <br />
   <?
+
+  // Get the post specific paywall amount
+  $paywall_amount = get_post_meta( $post->ID, 'microtrx_paywall_amount', true );
+
+  // If it hasn't been set for the post, then default to the global amount
+  if( empty( $paywall_amount ) ) {
+    $paywall_amount = $options[default_charge_string];
+  }
+
   echo '<label for="mictrx_paywall_value">';
   _e( 'Amount to charge (BTC)', 'microtrx_textdomain' );
   echo '</label> ';
-  echo "<input id='microtrx_charge_string' name='microtrx_charge_string' size='10' type='text' value='" . esc_attr( $value ) . "' />";
+  echo "<input id='microtrx_charge_string' name='microtrx_charge_string' size='10' type='text' value='" . esc_attr( $paywall_amount ) . "' />";
 
 }
 
@@ -94,15 +111,17 @@ function microtrx_save_meta_box_data( $post_id ) {
   /* OK, it's safe for us to save the data now. */
 
   // Make sure that it is set.
-  if ( ! isset( $_POST['myplugin_new_field'] ) ) {
+  if ( ! isset( $_POST['microtrx_enable_radio'] ) || ! isset( $_POST['microtrx_charge_string'] ) ) {
     return;
   }
 
   // Sanitize user input.
-  $my_data = sanitize_text_field( $_POST['myplugin_new_field'] );
+  $paywall_enabled = sanitize_text_field( $_POST['microtrx_enable_radio'] );
+  $paywall_amount = sanitize_text_field( $_POST['microtrx_charge_string'] );
 
   // Update the meta field in the database.
-  update_post_meta( $post_id, '_my_meta_value_key', $my_data );
+  update_post_meta( $post_id, 'microtrx_paywall_enabled', $paywall_enabled );
+  update_post_meta( $post_id, 'microtrx_paywall_amount', $paywall_amount );
 }
 
 add_action( 'save_post', 'microtrx_save_meta_box_data' );
