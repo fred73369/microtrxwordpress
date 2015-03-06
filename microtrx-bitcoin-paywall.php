@@ -14,4 +14,8 @@ include 'microtrx-options.php';
 
 // Pull in the post meta page for editing posts
 include 'microtrx-post-meta.php';
+
+// Pull in the post filter for inserting paywall
+include 'microtrx-post-filter.php';
+
 ?>
