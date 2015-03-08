@@ -12,7 +12,7 @@ function microtrx_the_content_filter( $content ) {
     $paywall_enabled = get_post_meta( $post->ID, 'microtrx_paywall_enabled', true );
 
     if($paywall_enabled === 'Yes' || $options[default_mode_string] === 'Yes'){
-      $content = '<p>This post is paywalled </p>' . $content;
+      $content = '<p> </p>' . $content;
     }
 
     return $content;
