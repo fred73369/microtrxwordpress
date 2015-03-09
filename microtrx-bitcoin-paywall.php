@@ -9,6 +9,9 @@
  * License: GPL2
  */
 
+// Pull in the DB intiializer for installation and upgrade scenarios
+include 'microtrx-db-initializer.php';
+
 // Pull in the options page for admin settings
 include 'microtrx-options.php';
 
