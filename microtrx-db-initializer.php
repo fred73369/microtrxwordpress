@@ -1,10 +1,6 @@
 <?php
 // Code inspired from here: http://codex.wordpress.org/Creating_Tables_with_Plugins
 
-define('WP_DEBUG_LOG', true);
-
-global $microtrx_db_version;
-$microtrx_db_version = '1.0';
 
 // Function to install/update db table
 function microtrx_install_db() {
